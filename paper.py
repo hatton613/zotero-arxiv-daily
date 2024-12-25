@@ -154,7 +154,7 @@ class ArxivPaper:
             match = re.search(r'\\section\{Conclusion\}.*?(\\section|\\end\{document\}|\\bibliography|\\appendix|$)', content, flags=re.DOTALL)
             if match:
                 conclusion = match.group(0)
-        prompt = """Given the title, abstract, introduction and the conclusion (if any) of a paper in latex format, generate a one-sentence TLDR summary:
+        prompt = """根据以下 LaTeX 格式论文标题、摘要、引言和结论（如果有），请用中文生成一句能概括全文主要内容的 TL;DR 摘要：
         
         \\title{__TITLE__}
         \\begin{abstract}__ABSTRACT__\\end{abstract}
@@ -176,7 +176,7 @@ class ArxivPaper:
             messages=[
                 {
                     "role": "system",
-                    "content": "You are an assistant who perfectly summarizes scientific paper, and gives the core idea of the paper to the user.",
+                    "content": "你是一位能够出色地总结科学论文，并向用户清晰呈现论文核心观点的助手。",
                 },
                 {"role": "user", "content": prompt},
             ]
@@ -196,7 +196,7 @@ class ArxivPaper:
             else:
                 logger.debug(f"Failed to extract affiliations of {self.arxiv_id}: No author information found.")
                 return None
-            prompt = f"Given the author information of a paper in latex format, extract the affiliations of the authors in a python list format, which is sorted by the author order. If there is no affiliation found, return an empty list '[]'. Following is the author information:\n{information_region}"
+            prompt = f"请根据LaTeX 格式的论文内容，提取这篇论文的作者机构信息，需要以 Python 列表格式进行输出，并按照作者顺序进行排序。例如：['中国科学院', '清华大学']。 如果没有找到任何机构信息，则返回一个空列表 '[]'。 你只需返回最终结果，而无需回复其他内容。以下为作者信息：\n{information_region}"
             # use gpt-4o tokenizer for estimation
             enc = tiktoken.encoding_for_model("gpt-4o")
             prompt_tokens = enc.encode(prompt)
@@ -207,7 +207,7 @@ class ArxivPaper:
                 messages=[
                     {
                         "role": "system",
-                        "content": "You are an assistant who perfectly extracts affiliations of authors from the author information of a paper. You should return a python list of affiliations sorted by the author order, like ['TsingHua University','Peking University']. If an affiliation is consisted of multi-level affiliations, like 'Department of Computer Science, TsingHua University', you should return the top-level affiliation 'TsingHua University' only. Do not contain duplicated affiliations. If there is no affiliation found, you should return an empty list [ ]. You should only return the final list of affiliations, and do not return any intermediate results.",
+                        "content": "你是能够完美地从论文作者信息中提取作者机构的助手。你应该返回一个按作者顺序排序的机构 Python 列表，例如 ['清华大学', '北京大学']。如果一个机构包含多级信息，例如 '计算机科学系，清华大学'，你应该只返回顶级机构 '清华大学'。不要包含重复的机构。如果没有找到任何机构，你应该返回一个空列表 []。你只需要返回最终的机构列表，无需返回任何中间结果。",
                     },
                     {"role": "user", "content": prompt},
                 ]
