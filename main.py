@@ -8,9 +8,6 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 from pyzotero import zotero
 from recommender import rerank_paper
 from construct_email import render_email, send_email
-import requests
-import datetime
-import re
 from tqdm import trange,tqdm
 from loguru import logger
 from gitignore_parser import parse_gitignore
@@ -149,7 +146,7 @@ if __name__ == '__main__':
         logger.debug("Debug mode is on.")
     else:
         logger.remove()
-        logger.add(sys.stdout, level="WARNING")
+        logger.add(sys.stdout, level="INFO")
 
     logger.info("Retrieving Zotero corpus...")
     corpus = get_zotero_corpus(args.zotero_id, args.zotero_key)

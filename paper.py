@@ -101,7 +101,7 @@ class ArxivPaper:
             file_contents = {}
             for t in tex_files:
                 f = tar.extractfile(t)
-                content = f.read().decode('utf-8')
+                content = f.read().decode('utf-8',errors='ignore')
                 #remove comments
                 content = re.sub(r'%.*\n', '\n', content)
                 content = re.sub(r'\\begin{comment}.*?\\end{comment}', '', content, flags=re.DOTALL)
@@ -217,6 +217,7 @@ class ArxivPaper:
                 affiliations = re.search(r'\[.*?\]', affiliations, flags=re.DOTALL).group(0)
                 affiliations = eval(affiliations)
                 affiliations = list(set(affiliations))
+                affiliations = [str(a) for a in affiliations]
             except Exception as e:
                 logger.debug(f"Failed to extract affiliations of {self.arxiv_id}: {e}")
                 return None
